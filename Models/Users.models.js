@@ -33,7 +33,9 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'user'],
     default: 'user'
   },
-}, {
+}, 
+
+{
   timestamps: true // Date user is created and updated 
 
 });
@@ -41,4 +43,4 @@ const userSchema = new mongoose.Schema({
 //Create Model from Schema
 const User = mongoose.model('User', userSchema);
 
-module.exports = User; 
+module.exports = User; // Export the model to be used in other files
