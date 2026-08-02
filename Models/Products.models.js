@@ -21,10 +21,14 @@ quantity: {
     type: Number,
     required: true
 },
-}, {
-  timestamps: true // Date user is created and updated 
+}, 
+
+{
+  timestamps: true // Date user created and updated at 
 
 });
 
 //Create Model from Schema
 const Product = mongoose.model('Product', productSchema);
+
+module.exports = Product; // Export the model to be used in other files
