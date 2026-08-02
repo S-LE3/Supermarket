@@ -24,7 +24,7 @@ quantity: {
 }, 
 
 {
-  timestamps: true // Date user created and updated at 
+  timestamps: true // Date user is created and updated
 
 });
 
