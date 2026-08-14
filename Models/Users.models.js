@@ -35,10 +35,10 @@ const userSchema = new mongoose.Schema({
   },
 }, 
 
-{
-  timestamps: true // Date user is created and updated 
+{timestamps: true} // Date user is created and updated
 
-});
+);
+
 
 //Create Model from Schema
 const User = mongoose.model('User', userSchema);
