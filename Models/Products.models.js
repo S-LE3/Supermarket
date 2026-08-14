@@ -5,8 +5,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    // Automatically generates a clean, unique serial number using the current timestamp and appends a random 4-digit number to guarantee uniqueness even within the same millisecond
+    default: () => `PROD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
+
     // Automatically generates a clean, unique serial number using the current timestamp
-    default: () => `PROD-${Date.now()}`
+    //default: () => `PROD-${Date.now()}`
+
     },
     name: { 
         type: String, 
@@ -24,13 +28,18 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    currency: { 
+        type: String, 
+        required: true, 
+        enum: ['NGN', 'USD', 'GBP', 'EUR'], // Restricts input to these choices
+        default: 'NGN' // Automatically uses NGN if none is provided
+    },
     quantity: {
         type: Number,
         required: true
     },
     color: {
         type: String,
-        required: true
     },
 
 }, 
@@ -69,6 +78,12 @@ module.exports = Product; // Export the model to be used in other files
 //   price: { 
 //       type: Number, 
 //       required: true 
+//   },
+//   currency: { 
+//       type: String, 
+//       required: true, 
+//       enum: ['NGN', 'USD', 'GBP', 'EUR'], // Restricts input to these choices
+//       default: 'NGN' // Automatically uses NGN if none is provided
 //   },
 //   quantity: { 
 //       type: Number, 

@@ -19,9 +19,9 @@ const Product = require('../Models/Products.models');
 //Create a product (preferable)
 exports.createProduct = async (req, res) => {
     try {
-        const { name, size, description, price, quantity, color } = req.body;
+        const { name, size, description, price, currency, quantity, color } = req.body;
 
-        const product = new Product({name, size, description, price, quantity, color });
+        const product = new Product({name, size, description, price, currency, quantity, color });
 
         await product.save();
         res.status(201).json({ message: 'Product created successfully', product });
@@ -34,15 +34,15 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try{
         const { id } = req.params; //where product Id is passed in the web
-        const { name, size, description, price, quantity, color } = req.body;
+        const { name, size, description, price, currency, quantity, color } = req.body;
 
         const product = await Product.findByIdAndUpdate(
             id,
-            { name, size, description, price, quantity, color },
+            { name, size, description, price, currency, quantity, color },
             { new: true, runValidators: true } // { new: true } forces MongoDB's response to show the brand-new edits immediately
         );
         if (!product) {
-            return res.status(400).json({ message: 'Product not found' });
+            return res.status(404).json({ message: 'Product not found' });
         }
 
         res.status(200).json({ message: 'Product updated successfully', product });
@@ -55,7 +55,7 @@ exports.updateProduct = async (req, res) => {
 //Get all products
 exports.getAllProducts = async (req, res) => {
     try {
-        const product = await Product.find(); //Fetches all the data in the database
+        const products = await Product.find(); //Fetches all the data in the database
         res.status(200).json({ success: true, count: products.length, products });
     }
     catch (error) {
@@ -95,7 +95,7 @@ exports.deleteProduct = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: 'Error deleting product', error: error.message });
     }
-
+};
     // To distinguish between client error and server error
     //   catch (error) {
     // 1. If it's a CastError, use 400. Otherwise, use 500.
@@ -106,6 +106,6 @@ exports.deleteProduct = async (req, res) => {
     //     res.status(status).json({ message: msg, error: error.message });
     // }
 
-};
+
 
     
