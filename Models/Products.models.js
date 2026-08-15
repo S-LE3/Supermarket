@@ -18,7 +18,6 @@ const productSchema = new mongoose.Schema({
     },
     size: {
         type: String,
-        required: true
     },
     description: {
         type: String,
@@ -26,7 +25,8 @@ const productSchema = new mongoose.Schema({
     },
     price: {
         type: Number,
-        required: true
+        required: true,
+        min: 0 // Prevents negative numbers from being saved
     },
     currency: { 
         type: String, 
@@ -34,12 +34,17 @@ const productSchema = new mongoose.Schema({
         enum: ['NGN', 'USD', 'GBP', 'EUR'], // Restricts input to these choices
         default: 'NGN' // Automatically uses NGN if none is provided
     },
+    isAvailable: {
+        type: Boolean,
+        default: true // New products are marked as available automatically
+    },
     quantity: {
         type: Number,
-        required: true
+        required: true,
+        min: 0 // Prevents negative inventory stock levels
     },
     color: {
-        type: String,
+        type: String
     },
 
 }, 

@@ -19,9 +19,16 @@ const Product = require('../Models/Products.models');
 //Create a product (preferable)
 exports.createProduct = async (req, res) => {
     try {
-        const { name, size, description, price, currency, quantity, color } = req.body;
 
-        const product = new Product({name, size, description, price, currency, quantity, color });
+        // Check if all required fields are provided
+        if (!req.body.name || !req.body.size || !req.body.description || !req.body.price || !req.body.quantity )
+        {
+            return res.status(400).json({ message: 'Please provide all required fields' });
+        }
+
+        const { name, size, description, price, currency, isAvailable, quantity, color } = req.body;
+
+        const product = new Product({name, size, description, price, currency, isAvailable, quantity, color });
 
         await product.save();
         res.status(201).json({ message: 'Product created successfully', product });
@@ -34,11 +41,11 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try{
         const { id } = req.params; //where product Id is passed in the web
-        const { name, size, description, price, currency, quantity, color } = req.body;
+        const { name, size, description, price, currency, isAvailable, quantity, color } = req.body;
 
         const product = await Product.findByIdAndUpdate(
             id,
-            { name, size, description, price, currency, quantity, color },
+            { name, size, description, price, currency, isAvailable, quantity, color },
             { new: true, runValidators: true } // { new: true } forces MongoDB's response to show the brand-new edits immediately
         );
         if (!product) {
@@ -48,18 +55,21 @@ exports.updateProduct = async (req, res) => {
         res.status(200).json({ message: 'Product updated successfully', product });
     }
     catch (error) {
-        res.status(500).json({ message: 'Error updating product', error: error.message });
+        const status = error.name === 'CastError' ? 400 : 500;
+        const msg = status === 400 ? 'Invalid product ID format' : 'Error updating product';
+        res.status(status).json({ message: msg, error: error.message });
     }
-}
+};
 
 //Get all products
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find(); //Fetches all the data in the database
+//      const products = await Product.find(); //Fetches all the data in the database
+        const products = await Product.find({ isAvailable: true }); // To ensure website frontend completely hides out-of-stock products from customers
         res.status(200).json({ success: true, count: products.length, products });
     }
     catch (error) {
-         res.status(500).json({ message: 'Error fetching products', error: error.message });
+        res.status(500).json({ message: 'Error fetching products', error: error.message });
     }
 };
 
@@ -77,7 +87,9 @@ exports.getProductById = async (req, res) => {
         res.status(200).json({ success: true, product });
     } 
     catch (error) {
-        res.status(500).json({ message: 'Error fetching product', error: error.message });
+        const status = error.name === 'CastError' ? 400 : 500;
+        const msg = status === 400 ? 'Invalid product ID format' : 'Error fetching product';
+        res.status(status).json({ message: msg, error: error.message });
     }
 };
 
@@ -92,20 +104,20 @@ exports.deleteProduct = async (req, res) => {
         }
 
         res.status(200).json({ message: 'Product deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting product', error: error.message });
-    }
-};
-    // To distinguish between client error and server error
-    //   catch (error) {
-    // 1. If it's a CastError, use 400. Otherwise, use 500.
-    //     const status = error.name === 'CastError' ? 400 : 500;
-     // 2. If status is 400, show the format error. Otherwise, show the server failure.
-    //     const msg = status === 400 ? 'Invalid product ID format' : 'Error fetching product';
-    // 3. Send the response back to the client with the calculated status and message
-    //     res.status(status).json({ message: msg, error: error.message });
+     } // catch (error) {
+    //     res.status(500).json({ message: 'Error deleting product', error: error.message });
     // }
 
+    // To distinguish between client error and server error
+       catch (error) {
+    // 1. If it's a CastError, use 400. Otherwise, use 500.
+        const status = error.name === 'CastError' ? 400 : 500;
+     // 2. If status is 400, show the format error. Otherwise, show the server failure.
+        const msg = status === 400 ? 'Invalid product ID format' : 'Error fetching product';
+    // 3. Send the response back to the client with the calculated status and message
+        res.status(status).json({ message: msg, error: error.message });
+     }
+};
 
 
     

@@ -10,28 +10,33 @@ const userSchema = new mongoose.Schema({
   email: { 
       type: String, 
       required: true,
-      unique: true
+      unique: true,
+      trim: true, // Automatically removes accidental spaces
+      lowercase: true // Automatically converts "User@Email.com" to "user@email.com"
   },
   password: { 
       type: String, 
-      required: true 
+      required: true,
+      minlength: 6, // Forces passwords to be at least 6 characters
+      maxlength: 100 // Maximum limit: Prevents excessively long string spam
   },
-  sex: { 
-      type: String, 
-      required: true 
+  gender: { 
+      type: String
   },
-  hasAtmCard: {
-    type: Boolean,
-    default: false
+  hasAdminAccess: {
+      type: Boolean,
+      default: false
   },
   phone: { 
       type: String, 
-      required: true 
+      required: true,
+      minlength: 10, // Ensures it's at least a valid 10-digit number
+      maxlength: 15  // Restricts it from exceeding international phone sizes
   },
   role: {
-    type: String,
-    enum: ['admin', 'user'],
-    default: 'user'
+      type: String,
+      enum: ['super_admin', 'store_keeper', 'salesperson'],
+      default: 'salesperson'
   },
 }, 
 
