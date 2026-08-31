@@ -9,34 +9,56 @@ const User = require('../Models/Users.models');
 // Create User secure Params
 exports.createUser = async (req, res) => {
     try {
+        //Request Body
         const { name, email, password, gender, phone, role } = req.body;
 
         // Check if all required fields are provided
         if (!req.body.name || !req.body.email || !req.body.password || !req.body.phone )
         {
-            return res.status(400).json({ message: 'Please provide all required fields' });
+            return res.status(400).json({  
+                success: false, 
+                message: 'Please provide all required fields (name, email, password, phone).' 
+            });
         }    
 
         // Email Check
         const existingUser = await User.findOne({ email: req.body.email });
         if(existingUser) {
-            return res.status(400).json({ message: 'Email already exists' })
+            return res.status(400).json({  
+                success: false, 
+                message: 'An account with this email address already exists.' 
+            });
         }
 
         // Phone number Check
         const existingPhone = await User.findOne({ phone: req.body.phone });
         if(existingPhone) {
-            return res.status(400).json({ message: 'Phone number already exists' })
+            return res.status(400).json({  
+                success: false, 
+                message: 'This phone number already exists' 
+            });
         }
 
-        // // Replaces both of your individual search blocks with one quick look up:
+         //Password Check
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d)/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Password must contain at least one capital letter, one special character, and one number.' 
+            });
+        }
+
+        // // Replaces both individual search blocks with one quick look up:
         // const duplicateCheck = await User.findOne({
         //     $or: [ { email: req.body.email }, { phone: req.body.phone } ]
         // });
 
         // if (duplicateCheck) {
         //    const field = duplicateCheck.email === req.body.email ? 'Email' : 'Phone number';
-        //    return res.status(400).json({ message: `${field} already exists` });
+        //    return res.status(400).json({  
+        //      success: false, 
+        //      message: `${field} already exists` 
+        // });
         // }
 
         // Encrypt Password
@@ -60,9 +82,17 @@ exports.createUser = async (req, res) => {
         const userResponse = user.toObject();  // Removes the password hash from the response data
         delete userResponse.password;
 
-        res.status(201).json({ message: 'User created successfully', user: userResponse });
+        res.status(201).json({ 
+            success: true, 
+            message: 'User created successfully', 
+            user: userResponse 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error creating user', error: error.message })
+        res.status(500).json({  
+            success: false, 
+            message: 'Error creating user', 
+            error: error.message 
+        });
     }
 };
 
@@ -73,36 +103,56 @@ exports.loginUser = async (req, res) => {
 
         // Fail Fast: Check if the client provided both fields
         if (!email || !password) {
-            return res.status(400).json({ message: 'Please provide both email and password' });
+            return res.status(400).json({  
+                success: false, 
+                message: 'Please provide both email and password' 
+            });
         }
 
         // Find the User by their Email
         const user = await User.findOne({ email: email.toLowerCase().trim() })
         // Security Rule: If the user doesn't exist, stop immediately i.e check if user exists
         if(!user) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({  
+                success: false, 
+                message: 'The email address or password you entered is incorrect.' 
+            });
         }
 
         // Verify Password: Compare plain-text input with the database hash to check if password is correct
         const isPasswordValid = await bcrypt.compare(password, user.password);
         // Security Rule: If the password doesn't match, stop immediately i.e i.e check if password exists
         if (!isPasswordValid) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(401).json({  
+                success: false, 
+                message: 'The email address or password you entered is incorrect.' 
+            });
         }
 
-        // Generate a token 
+        // Generate a token (JWT or any other method can be used)
         // const token = generateToken(user); // Implement the generation token here
-
-        const token = jwt.sign({ id: user._id, role: user.role }, // Safe payload: No passswords
+        
+        // Generate a token using JWT
+        const jswt = require('jsonwebtoken')
+        const token = jwt.sign({ id: user._id,name: user.name, email: user.email, role: user.role }, // Safe payload: No passswords
         process.env.JWT_SECRET,
         { expiresIn: '1h' });
 
         const userResponse = user.toObject();
         delete userResponse.password;
 
-        res.status(200).json({ message: 'Login successful', token, user: userResponse });
+        res.status(200).json({  
+            success: true, 
+            message: 'Login successful', 
+            token, 
+            user: userResponse 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Error logging in', error: error.message });
+        res.status(500).json({  
+            success: false, 
+            message: 'Error logging in, please try again later', 
+            error: error.message 
+        });
     }
 };
 

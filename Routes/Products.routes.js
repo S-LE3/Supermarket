@@ -9,11 +9,11 @@ const productController = require('../Controllers/Products.controllers');
 //Define the routes
 router.post('/products', productController.createProduct);
 
-router.get('/products', productController.getAllProducts);
+router.put('/products/:id', productController.updateProduct);
 
 router.get('/products/:id', productController.getProductById);
 
-router.put('/products/:id', productController.updateProduct);
+router.get('/products', productController.getAllProducts);
 
 router.delete('/products/:id', productController.deleteProduct);
 
