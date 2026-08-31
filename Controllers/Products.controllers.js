@@ -24,17 +24,17 @@ exports.createProduct = async (req, res) => {
     try {
 
         // Check if all required fields are provided
-        if (!req.body.name || !req.body.size || !req.body.description || !req.body.price || !req.body.quantity )
+        if ( !req.body.name || !req.body.size || !req.body.description || !req.body.price || !req.body.quantity ) //or add || !req.body.barcode || !req.body.category || !req.body.costPrice
         {
             return res.status(400).json({ 
                 success: false, 
-                message: 'Please provide all required fields (name, size, description, price, quantity).' 
+                message: 'Please provide all required fields (name, size, description, price, quantity).' //or add barcode, category, costPrice
             });
         }
 
-        const { name, size, description, price, currency, isAvailable, quantity, color } = req.body;
+        const { name, size, description, price, currency, isAvailable, quantity, color } = req.body; //or add color, barcode, category, costPrice, lowStockThreshold
 
-        const product = new Product({name, size, description, price, currency, isAvailable, quantity, color });
+        const product = new Product({ name, size, description, price, currency, isAvailable, quantity, color }); //or add color, barcode, category, costPrice, lowStockThreshold
 
         await product.save();
         res.status(201).json({ 
@@ -43,6 +43,13 @@ exports.createProduct = async (req, res) => {
             product 
         });
     } catch (error) {
+        // // Handle duplicate barcode errors gracefully
+        // if (error.code === 11000) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'Registration failed. A product with this barcode already exists in inventory.'
+        //     });
+        // }
         res.status(500).json({ 
             success: false, 
             message: 'Error creating product', 
@@ -55,11 +62,11 @@ exports.createProduct = async (req, res) => {
 exports.updateProduct = async (req, res) => {
     try{
         const { id } = req.params; //where product Id is passed in the web
-        const { name, size, description, price, currency, isAvailable, quantity, color } = req.body;
+        const { name, size, description, price, currency, isAvailable, quantity, color } = req.body; //or add color, barcode, category, costPrice, lowStockThreshold
 
         const product = await Product.findByIdAndUpdate(
             id,
-            { name, size, description, price, currency, isAvailable, quantity, color },
+            { name, size, description, price, currency, isAvailable, quantity, color }, //or add color, barcode, category, costPrice, lowStockThreshold
             { new: true, runValidators: true } // { new: true } forces MongoDB's response to show the brand-new edits immediately
         );
         if (!product) {
@@ -76,6 +83,12 @@ exports.updateProduct = async (req, res) => {
         });
     }
     catch (error) {
+        // if (error.code === 11000) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: 'Update failed. This barcode is already assigned to another product.'
+        //     });
+        // }
         const status = error.name === 'CastError' ? 400 : 500;
         const msg = status === 400 ? 'Invalid product ID format' : 'Error updating product';
         res.status(status).json({ 
@@ -159,7 +172,8 @@ exports.deleteProduct = async (req, res) => {
      } // catch (error) {
     //     res.status(500).json({ 
     //          success: false, 
-    //          message: 'Error deleting product', error: error.message 
+    //          message: 'Error deleting product', 
+    //          error: error.message 
     // });
     // }
 
@@ -172,7 +186,8 @@ exports.deleteProduct = async (req, res) => {
     // 3. Send the response back to the client with the calculated status and message
         res.status(status).json({ 
             success: false, 
-            message: msg, error: error.message 
+            message: msg, 
+            error: error.message 
         });
      }
 };

@@ -4,7 +4,6 @@ const productSchema = new mongoose.Schema({
     serialId: {
     type: String,
     required: true,
-    unique: true,
     // Automatically generates a clean, unique serial number using the current timestamp and appends a random 4-digit number to guarantee uniqueness even within the same millisecond
     default: () => `PROD-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`
 
@@ -12,17 +11,39 @@ const productSchema = new mongoose.Schema({
     //default: () => `PROD-${Date.now()}`
 
     },
+    // //Added field for physical cash-register laser scanning
+    // barcode: {
+    //     type: String,
+    //     required: true,
+    //     unique: true, // Crucial: Prevents duplicate scanner overlapping
+    //     trim: true
+    // },
     name: { 
         type: String, 
-        required: true 
+        required: true, 
+        trim: true
     },
+    // //Added field for physical cash-register laser scanning
+    // barcode: {
+    //     type: String,
+    //     required: true,
+    //     unique: true, // Crucial: Prevents duplicate scanner overlapping
+    //     trim: true
+    // },
     size: {
         type: String,
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
+    // //Tracked to calculate corporate revenue vs investment profit balances
+    // costPrice: {
+    //     type: Number,
+    //     required: true,
+    //     min: 0
+    // },
     price: {
         type: Number,
         required: true,
@@ -42,7 +63,13 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0 // Prevents negative inventory stock levels
-    },
+    }, 
+    // //Automates procurement triggers before shelf items completely run out
+    // lowStockThreshold: {
+    //     type: Number,
+    //     required: true,
+    //     default: 10 // Prompts a system warning if quantity falls to/below this
+    // },
     color: {
         type: String
     },

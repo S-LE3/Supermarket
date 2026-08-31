@@ -38,6 +38,21 @@ const userSchema = new mongoose.Schema({
       enum: ['super_admin', 'store_keeper', 'salesperson'],
       default: 'salesperson'
   },
+      
+//  // Real-World Supermarket Additions:
+//   branchLocation: {
+//       type: String,
+//       required: true,
+//       default: 'Main-Branch' // e.g., 'Ikorodu-Asolo', 'ShopRite-Ikeja'
+//   },
+//   assignedTill: {
+//       type: String,
+//       default: 'Not-Assigned' // e.g., 'Till_01', 'Till_02'
+//   },
+//   isActive: {
+//       type: Boolean,
+//       default: true // Allows admins to immediately lock out fired or suspended staff
+//   }
 }, 
 
 {timestamps: true} // Date user is created and updated

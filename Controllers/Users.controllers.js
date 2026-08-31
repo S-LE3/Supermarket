@@ -10,10 +10,10 @@ const User = require('../Models/Users.models');
 exports.createUser = async (req, res) => {
     try {
         //Request Body
-        const { name, email, password, gender, phone, role } = req.body;
+        const { name, email, password, gender, phone, role } = req.body; // include the following if need be: branchLocation: branchLocation || 'Main-Branch', assignedTill: assignedTill || 'Not-Assigned'
 
         // Check if all required fields are provided
-        if (!req.body.name || !req.body.email || !req.body.password || !req.body.phone )
+        if (!req.body.name || !req.body.email || !req.body.password || !req.body.phone ) 
         {
             return res.status(400).json({  
                 success: false, 
@@ -56,8 +56,8 @@ exports.createUser = async (req, res) => {
         // if (duplicateCheck) {
         //    const field = duplicateCheck.email === req.body.email ? 'Email' : 'Phone number';
         //    return res.status(400).json({  
-        //      success: false, 
-        //      message: `${field} already exists` 
+        //        success: false, 
+        //        message: `This ${field} already exists` //or  message: `Registration failed. ${field} is already assigned to an employee.`
         // });
         // }
 
@@ -75,6 +75,8 @@ exports.createUser = async (req, res) => {
             phone, 
             role: req.body.role || 'salesperson', // Default role is 'salesperson' if not provided
             hasAdminAccess: req.body.hasAdminAccess || false // Default is false if not provided
+            // branchLocation: branchLocation || 'Main-Branch',
+            // assignedTill: assignedTill || 'Not-Assigned'
         });
 
         await user.save();
@@ -84,19 +86,19 @@ exports.createUser = async (req, res) => {
 
         res.status(201).json({ 
             success: true, 
-            message: 'User created successfully', 
+            message: 'User created successfully', //or message: 'Employee record established successfully.',
             user: userResponse 
         });
     } catch (error) {
         res.status(500).json({  
             success: false, 
-            message: 'Error creating user', 
+            message: 'Error creating user', //or message: 'Internal server error processing employee record.',
             error: error.message 
         });
     }
 };
 
-// Login a User
+// Login a User/Employee (Supermarket POS / Admin Terminal Auth)
 exports.loginUser = async (req, res) => {
     try{
         const { email, password } = req.body;
@@ -115,7 +117,7 @@ exports.loginUser = async (req, res) => {
         if(!user) {
             return res.status(401).json({  
                 success: false, 
-                message: 'The email address or password you entered is incorrect.' 
+                message: 'The email address or password you entered is incorrect.' //or message: 'Authentication failed. Invalid credentials or locked terminal account.'
             });
         }
 
@@ -125,7 +127,7 @@ exports.loginUser = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({  
                 success: false, 
-                message: 'The email address or password you entered is incorrect.' 
+                message: 'The email address or password you entered is incorrect.' //ormessage: 'Authentication failed. Invalid credentials or locked terminal account.'
             });
         }
 
@@ -133,24 +135,37 @@ exports.loginUser = async (req, res) => {
         // const token = generateToken(user); // Implement the generation token here
         
         // Generate a token using JWT
-        const jswt = require('jsonwebtoken')
-        const token = jwt.sign({ id: user._id,name: user.name, email: user.email, role: user.role }, // Safe payload: No passswords
+        // Safe payload: No passswords
+        const token = jwt.sign({ id: user._id,name: user.name, email: user.email, role: user.role }, //or { id: user._id, name: user.name, role: user.role, branch: user.branchLocation }, 
         process.env.JWT_SECRET,
-        { expiresIn: '1h' });
+        { expiresIn: '1h' }); //or { expiresIn: '8h' } // Typical retail shift length duration
 
         const userResponse = user.toObject();
         delete userResponse.password;
 
+        // // 4. Clean and format the production user template response payload (Enterprise Whitelist)
+        // const userResponse = {
+        //     id: user._id,
+        //     name: user.name,
+        //     email: user.email,
+        //     phone: user.phone,
+        //     role: user.role,
+        //     stationDetails: {
+        //         branch: user.branchLocation,
+        //         assignedRegister: user.assignedTill
+        //     }
+        // };
+
         res.status(200).json({  
             success: true, 
-            message: 'Login successful', 
+            message: 'Login successful', //or message: 'Employee terminal authentication successful.',
             token, 
             user: userResponse 
         });
     } catch (error) {
         res.status(500).json({  
             success: false, 
-            message: 'Error logging in, please try again later', 
+            message: 'Error logging in, please try again later', //or message: 'System error handling terminal login process.', 
             error: error.message 
         });
     }
