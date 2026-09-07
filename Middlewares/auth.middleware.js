@@ -1,4 +1,5 @@
 
+//Create authentication middleware
 const jwt = require('jsonwebtoken');
 
 
@@ -6,7 +7,7 @@ const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
     try {
-    // 1. Grab the token sent from the frontend headers
+    // Grab the token sent from the frontend headers
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
@@ -14,16 +15,19 @@ const verifyToken = (req, res, next) => {
             message: 'Access denied. No token provided.'
         });
     }
-    // 2. Extract the actual token string by splitting off the word "Bearer "
+    // Extract the actual token string by splitting off the word "Bearer "
         const token = authHeader.split(' ')[1];
-    // 3. Decode and verify the token using your secret key
+
+    // Decode and verify the token using your secret key
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // 4. Attach the decoded user data directly to the request object
+
+    // Attach the decoded user data directly to the request object
         req.user = decoded; 
-    // 5. Tell Express to move on to your controller
+        
+    // Tell Express to move on to controller
         next(); 
     } catch (error) {
-        return res.status(403).json({
+        return res.status(401).json({
             success: false,
             message: 'Invalid or expired token.',
             error: error.message

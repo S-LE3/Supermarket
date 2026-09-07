@@ -1,6 +1,5 @@
 
 const mongoose = require('mongoose');
-const bcrypt = require ('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: { 
@@ -17,6 +16,8 @@ const userSchema = new mongoose.Schema({
   password: { 
       type: String, 
       required: true,
+      unique: true, // Enforces unique phone profiles at database level
+      trim: true, 
       minlength: 6, // Forces passwords to be at least 6 characters
       maxlength: 100 // Maximum limit: Prevents excessively long string spam
   },
@@ -38,6 +39,10 @@ const userSchema = new mongoose.Schema({
       enum: ['super_admin', 'store_keeper', 'salesperson'],
       default: 'salesperson'
   },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+},
       
 //  // Real-World Supermarket Additions:
 //   branchLocation: {

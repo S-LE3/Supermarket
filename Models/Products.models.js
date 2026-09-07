@@ -1,6 +1,7 @@
 
 const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
+
     serialId: {
     type: String,
     required: true,
@@ -9,8 +10,8 @@ const productSchema = new mongoose.Schema({
 
     // Automatically generates a clean, unique serial number using the current timestamp
     //default: () => `PROD-${Date.now()}`
-
     },
+
     // //Added field for physical cash-register laser scanning
     // barcode: {
     //     type: String,
@@ -18,58 +19,80 @@ const productSchema = new mongoose.Schema({
     //     unique: true, // Crucial: Prevents duplicate scanner overlapping
     //     trim: true
     // },
+
     name: { 
         type: String, 
         required: true, 
         trim: true
     },
-    // //Added field for physical cash-register laser scanning
-    // barcode: {
-    //     type: String,
-    //     required: true,
-    //     unique: true, // Crucial: Prevents duplicate scanner overlapping
-    //     trim: true
-    // },
+
+    category: {
+        type: String,
+        required: true,
+        trim: true
+    },
+
     size: {
         type: String,
+        required: true,
+        trim: true
     },
+
     description: {
         type: String,
         required: true,
         trim: true
     },
+
     // //Tracked to calculate corporate revenue vs investment profit balances
     // costPrice: {
     //     type: Number,
     //     required: true,
     //     min: 0
     // },
+
+    image: {
+    url: {
+        type: String,
+        required: false
+    },
+    public_id: {
+        type: String,
+        required: false // Ensures every image can be deleted from the cloud later
+    }
+    },
+
     price: {
         type: Number,
         required: true,
         min: 0 // Prevents negative numbers from being saved
     },
+
     currency: { 
         type: String, 
         required: true, 
         enum: ['NGN', 'USD', 'GBP', 'EUR'], // Restricts input to these choices
         default: 'NGN' // Automatically uses NGN if none is provided
     },
+
     isAvailable: {
         type: Boolean,
         default: true // New products are marked as available automatically
     },
+
     quantity: {
         type: Number,
         required: true,
         min: 0 // Prevents negative inventory stock levels
-    }, 
+    },
+
     // //Automates procurement triggers before shelf items completely run out
     // lowStockThreshold: {
     //     type: Number,
     //     required: true,
     //     default: 10 // Prompts a system warning if quantity falls to/below this
     // },
+
     color: {
         type: String
     },
@@ -95,32 +118,72 @@ module.exports = Product; // Export the model to be used in other files
 // const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 // const productSchema = new mongoose.Schema({
+
+// //Added field for physical cash-register laser scanning
+// barcode: {
+//     type: String,
+//     required: true,
+//     unique: true, // Crucial: Prevents duplicate scanner overlapping
+//     trim: true
+// },
+
 //   name: { 
 //       type: String, 
 //       required: true 
 //   },
+
+// category: {
+//     type: String,
+//     required: true, 
+//     trim: true
+// },
+
 //   size: { 
 //       type: String, 
 //       required: true 
 //   },
+
 //   description: { 
 //       type: String, 
 //       required: true 
 //   },
+
+// //Tracked to calculate corporate revenue vs investment profit balances
+//   costPrice: {
+//       type: Number,
+//       required: true,
+//       min: 0
+//   },
+
+//   image: {
+//       type: String,
+//       required: false // Adds a  photo to every supermarket product that it is required
+//   },
+
 //   price: { 
 //       type: Number, 
 //       required: true 
 //   },
+
 //   currency: { 
 //       type: String, 
 //       required: true, 
 //       enum: ['NGN', 'USD', 'GBP', 'EUR'], // Restricts input to these choices
 //       default: 'NGN' // Automatically uses NGN if none is provided
 //   },
+
 //   quantity: { 
 //       type: Number, 
 //       required: true 
 //   },
+
+// //Automates procurement triggers before shelf items completely run out
+//  lowStockThreshold: {
+//      type: Number,
+//      required: true,
+//      default: 10 // Prompts a system warning if quantity falls to/below this
+//     },
+
 //   color: {
 //       type: String,
 //       required: true
