@@ -16,9 +16,8 @@ const userSchema = new mongoose.Schema({
   password: { 
       type: String, 
       required: true,
-      unique: true, // Enforces unique phone profiles at database level
       trim: true, 
-      minlength: 6, // Forces passwords to be at least 6 characters
+      minlength: 8, // Forces passwords to be at least 6 characters
       maxlength: 100 // Maximum limit: Prevents excessively long string spam
   },
   gender: { 
