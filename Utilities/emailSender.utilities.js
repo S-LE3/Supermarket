@@ -5,7 +5,7 @@ const sendEmail = async (to, subject, text) => {
     const mailOptions = {
         from: `"Inventory Management System" <${process.env.EMAIL_USER}>`, // process.env.EMAIL_USER,
         to,
-        subject: 'Welcome',
+        subject: 'Welcome!',
         text
     };
 
