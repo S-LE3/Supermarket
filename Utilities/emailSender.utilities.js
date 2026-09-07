@@ -38,7 +38,7 @@ module.exports = sendEmail;
 //         await transporter.sendMail(mailOptions);
 //         console.log(`Automated email successfully dispatched to: ${employeeEmail}`);
 //     } catch (error) {
-//         // We log the error but don't crash the server, keeping the main endpoint online!
+//         // We log the error but don't crash the server, keeping the main endpoint online
 //         console.error('Nodemailer automation pipeline failed:', error.message);
 //     }
 // };
